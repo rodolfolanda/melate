@@ -9,6 +9,6 @@ const excludeXTopNumbers = 3;
 const excludeXLastNumbers = 3;
 const threshold = 2
 const warmUp = 100;
-const howManyDraws = 3;
+const howManyDraws = 1;
 
 generateDrawsForGame(games.lottoMax, csvDataFilePath, getLottoMaxCsvData, excludeXTopNumbers, excludeXLastNumbers, threshold, warmUp, howManyDraws);
