@@ -1,8 +1,20 @@
 {
+  "type": "module",
+  "scripts": {
+    "build": "tsc",
+    "lint": "eslint src/**/*.ts",
+    "lint:fix": "eslint src/**/*.ts --fix",
+    "type-check": "tsc --noEmit"
+  },
   "devDependencies": {
+    "@stylistic/eslint-plugin": "^5.4.0",
     "@types/node": "^22.8.7",
     "@types/xlsx": "^0.0.36",
-    "typescript": "^5.9.3"
+    "@typescript-eslint/eslint-plugin": "^8.46.0",
+    "@typescript-eslint/parser": "^8.46.0",
+    "eslint-config-prettier": "^10.1.8",
+    "typescript": "^5.9.3",
+    "typescript-eslint": "^8.46.0"
   },
   "dependencies": {
     "csv-parser": "^3.0.0",
