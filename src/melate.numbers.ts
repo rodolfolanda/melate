@@ -1,8 +1,8 @@
-import { processCsvFile } from './melate.history';
+import { processCsvFile } from './melate.history.js';
 
-let csvDataFor649: ReturnType<typeof processCsvFile> | null = null;
-let csvDataForLottoMax: ReturnType<typeof processCsvFile> | null = null;
-let csvDataForBC49: ReturnType<typeof processCsvFile> | null = null;
+let csvDataFor649: Promise<number[][]> | null = null;
+let csvDataForLottoMax: Promise<number[][]> | null = null;
+let csvDataForBC49: Promise<number[][]> | null = null;
 
 const games: { [game: string]: GameConfig } = {
   sixFourtyNine: { min: 1, max: 49, count: 6, filePath: 'data/649.csv', gameType: '6/49' },
@@ -18,26 +18,19 @@ interface GameConfig {
     gameType?: string
 }
 
-function get649CsvData() {
-  if (csvDataFor649 === null) {
-    csvDataFor649 = processCsvFile(games.sixFourtyNine.filePath);
-  }
+function get649CsvData(): Promise<number[][]> {
+  csvDataFor649 ??= processCsvFile(games.sixFourtyNine.filePath);
   return csvDataFor649;
 }
 
-function getLottoMaxCsvData() {
-  if (csvDataForLottoMax === null) {
-    csvDataForLottoMax = processCsvFile(games.lottoMax.filePath);
-  }
+function getLottoMaxCsvData(): Promise<number[][]> {
+  csvDataForLottoMax ??= processCsvFile(games.lottoMax.filePath);
   return csvDataForLottoMax;
 }
 
-function getBC49CsvData() {
-  if (csvDataForBC49 === null) {
-    csvDataForBC49 = processCsvFile(games.bcSixFourtyNine.filePath);
-  }
+function getBC49CsvData(): Promise<number[][]> {
+  csvDataForBC49 ??= processCsvFile(games.bcSixFourtyNine.filePath);
   return csvDataForBC49;
-  ;
 }
 
 function isUniqueSet(numbers: number[], existingSets: number[][], threshold = 0): boolean {

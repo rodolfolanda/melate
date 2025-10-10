@@ -2,11 +2,13 @@ interface NumberCount {
     [key: number]: number;
 }
 
+const COLUMNS_TO_SKIP = 4;
+
 function removeFirstFourColumns(csvData: string): string {
   const lines = csvData.split('\n');
   const processedLines = lines.map(line => {
     const columns = line.split(',');
-    return columns.slice(4).join(',');
+    return columns.slice(COLUMNS_TO_SKIP).join(',');
   });
   return processedLines.join('\n');
 }

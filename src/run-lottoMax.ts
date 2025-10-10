@@ -1,6 +1,6 @@
 import * as fs from 'fs';
-import { games, getLottoMaxCsvData } from './melate.numbers';
-import { generateDrawsForGame } from './melate.play';
+import { games, getLottoMaxCsvData } from './melate.numbers.js';
+import { generateDrawsForGame } from './melate.play.js';
 
 // Example usage:
 const csvDataFilePath = fs.readFileSync(games.lottoMax.filePath, 'utf-8');

@@ -1,6 +1,6 @@
 import * as fs from 'fs';
-import { games, getBC49CsvData } from './melate.numbers';
-import { generateDrawsForGame } from './melate.play';
+import { games, getBC49CsvData } from './melate.numbers.js';
+import { generateDrawsForGame } from './melate.play.js';
 
 // Example usage:
 const csvDataFilePath = fs.readFileSync(games.bcSixFourtyNine.filePath, 'utf-8');

@@ -1,9 +1,9 @@
-import { generateRandomNumbers, GameConfig } from './melate.numbers';
-import { getLastXNumbers, getFirstXNumbers, countNumbersInCSV } from './melate.statistics';
+import { generateRandomNumbers, GameConfig } from './melate.numbers.js';
+import { getLastXNumbers, getFirstXNumbers, countNumbersInCSV } from './melate.statistics.js';
 
-async function getDrawFor(config: { min: number; max: number; count: number }, dataFetcher: () => Promise<any>, exclude: number[], threshold: number, warmUp: number): Promise<number[]> {
+async function getDrawFor(config: { min: number; max: number; count: number }, dataFetcher: () => Promise<number[][]>, exclude: number[], threshold: number, warmUp: number): Promise<number[]> {
   const data = await dataFetcher();
-  const results = [];
+  const results: number[][] = [];
   for (let i = 0; i <= warmUp; i++) {
     results.push(generateRandomNumbers(config, data, exclude, threshold));
   }
@@ -14,7 +14,7 @@ async function getDrawFor(config: { min: number; max: number; count: number }, d
 function generateDrawsForGame(
   game: GameConfig,
   csvDataFilePath: string,
-  csvDataForGame: () => Promise<any>,
+  csvDataForGame: () => Promise<number[][]>,
   excludeTop: number,
   excludeLast: number,
   threshold: number,
@@ -27,7 +27,7 @@ function generateDrawsForGame(
 
   console.log(`Generated numbers for ${game.gameType} game:`);
   for (let i = 0; i < howManyDraws; i++) {
-    getDrawFor(game, csvDataForGame, excludeForGame, threshold, warmUp).then((draw: any) => {
+    void getDrawFor(game, csvDataForGame, excludeForGame, threshold, warmUp).then((draw: number[]) => {
       console.log(draw);
     });
   }
