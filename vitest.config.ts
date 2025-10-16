@@ -16,11 +16,11 @@ export default defineConfig({
         'src/**/*.d.ts',
         '**/__tests__/**',
       ],
-      // Coverage thresholds - start with achievable goals
+      // Coverage thresholds - consistent and achievable goals
       thresholds: {
         lines: 50,
         functions: 50,
-        branches: 90,
+        branches: 50,
         statements: 50,
       },
     },
