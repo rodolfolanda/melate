@@ -52,6 +52,19 @@ export default [
     ...tseslint.configs.disableTypeChecked,
   },
   {
-    ignores: ['dist/**', 'node_modules/**'],
+    // Test files have relaxed rules
+    files: ['**/__tests__/**/*.ts', '**/*.test.ts', '**/*.spec.ts'],
+    rules: {
+      '@typescript-eslint/no-explicit-any': 'off',
+      '@typescript-eslint/no-unsafe-assignment': 'off',
+      '@typescript-eslint/no-unsafe-call': 'off',
+      '@typescript-eslint/no-unsafe-member-access': 'off',
+      '@typescript-eslint/no-unsafe-argument': 'off',
+      'no-magic-numbers': 'off',
+      'max-lines-per-function': 'off',
+    },
+  },
+  {
+    ignores: ['dist/**', 'node_modules/**', 'coverage/**'],
   },
 ];
