@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { 
   games, 
   get649CsvData, 
@@ -98,6 +98,37 @@ export function useLotteryGenerator(): {
     historicalData: [],
     excludedNumbers: [],
   });
+
+  // Load historical data whenever the game changes
+  useEffect(() => {
+    const loadHistoricalData = async (): Promise<void> => {
+      try {
+        const dataFetcher = getDataFetcherForGame(state.selectedGame);
+        const data = await dataFetcher();
+        const game = games[state.selectedGame];
+        
+        // Get CSV content for frequency analysis
+        const response = await fetch(`/${game.filePath}`);
+        const csvText = await response.text();
+        
+        // Calculate excluded numbers
+        const numberCounts = countNumbersInCSV(csvText);
+        const topNumbers = getFirstXNumbers(numberCounts, state.config.excludeTop);
+        const bottomNumbers = getLastXNumbers(numberCounts, state.config.excludeBottom);
+        const excludeNumbers = [...topNumbers, ...bottomNumbers];
+        
+        setState(prev => ({
+          ...prev,
+          historicalData: data,
+          excludedNumbers: excludeNumbers,
+        }));
+      } catch (err) {
+        console.error('Error loading historical data:', err);
+      }
+    };
+
+    void loadHistoricalData();
+  }, [state.selectedGame, state.config.excludeTop, state.config.excludeBottom]);
 
   const getCurrentGame = useCallback((): GameConfig => {
     return games[state.selectedGame];
