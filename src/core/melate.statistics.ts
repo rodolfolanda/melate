@@ -48,11 +48,13 @@ function countNumbersInCSV(csvData: string): NumberCount {
 }
 
 function getLastXNumbers(numberCount: NumberCount, n: number): number[] {
+  if (n === 0) return [];
   const sortedEntries = sortNumberCountDescending(numberCount);
   return sortedEntries.slice(-n).map(entry => entry[0]);
 }
 
 function getFirstXNumbers(numberCount: NumberCount, n: number): number[] {
+  if (n === 0) return [];
   const sortedEntries = sortNumberCountDescending(numberCount);
   return sortedEntries.slice(0, n).map(entry => entry[0]);
 }

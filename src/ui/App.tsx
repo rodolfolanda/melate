@@ -1,7 +1,21 @@
-import { useState } from 'react';
+import { useLotteryGenerator } from './hooks/useLotteryGenerator';
+import { GameSelector } from './components/GameSelector';
+import { NumberDisplay } from './components/NumberDisplay';
+import { GenerateButton } from './components/GenerateButton';
+import { ConfigurationPanel } from './components/ConfigurationPanel';
+import { GeneratedHistory } from './components/GeneratedHistory';
 
 function App(): React.JSX.Element {
-  const [count, setCount] = useState(0);
+  const {
+    state,
+    setSelectedGame,
+    updateConfig,
+    generateNumbers,
+    clearHistory,
+    getCurrentGame,
+  } = useLotteryGenerator();
+
+  const currentGame = getCurrentGame();
 
   return (
     <div className="app">
@@ -11,12 +25,45 @@ function App(): React.JSX.Element {
       </header>
       
       <main className="app-main">
-        <div className="welcome-card">
-          <h2>Welcome!</h2>
-          <p>This is your new React UI for the lottery number generator.</p>
-          <button onClick={() => setCount((count) => count + 1)}>
-            Test Button: count is {count}
-          </button>
+        <div className="app-layout">
+          <aside className="app-sidebar">
+            <GameSelector 
+              selectedGame={state.selectedGame}
+              onGameChange={setSelectedGame}
+            />
+            
+            <ConfigurationPanel
+              config={state.config}
+              onConfigChange={updateConfig}
+            />
+          </aside>
+
+          <div className="app-content">
+            <div className="generation-section">
+              <NumberDisplay 
+                numbers={state.generatedNumbers}
+                gameName={currentGame.gameType ?? 'Unknown'}
+              />
+              
+              {state.error && (
+                <div className="error-message">
+                  ⚠️ {state.error}
+                </div>
+              )}
+              
+              <GenerateButton
+                onClick={(): void => {
+                  void generateNumbers();
+                }}
+                isGenerating={state.isGenerating}
+              />
+            </div>
+
+            <GeneratedHistory
+              history={state.history}
+              onClear={clearHistory}
+            />
+          </div>
         </div>
       </main>
       
