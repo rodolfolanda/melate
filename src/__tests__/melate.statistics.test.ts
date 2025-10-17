@@ -92,13 +92,12 @@ more,ignored,data,cols,0,10,`;
       expect(result).toContain(4);  // second lowest (8)
     });
 
-    it('should handle n is 0 (returns all numbers due to slice behavior)', () => {
+    it('should handle n is 0 (returns empty array)', () => {
       const numberCount = { 1: 10, 2: 5 };
 
       const result = getLastXNumbers(numberCount, 0);
 
-      // slice(-0) returns the entire array in JavaScript
-      expect(result).toHaveLength(2);
+      expect(result).toHaveLength(0);
     });
 
     it('should handle requesting more numbers than available', () => {
