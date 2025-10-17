@@ -24,6 +24,9 @@ This project was crafted with the latest AI goodies! 🚀 Developed through an e
 - **Uniqueness Validation**: Ensures generated numbers don't match historical patterns too closely
 - **Configurable Parameters**: Customizable warm-up iterations, thresholds, and exclusion counts
 - **Type-Safe**: Written in TypeScript with comprehensive type checking and ESLint validation
+- **Automated Data Updates**: 🆕 Automatically downloads latest lottery data from BCLC (see [DATA_UPDATE_GUIDE.md](DATA_UPDATE_GUIDE.md))
+- **CI/CD Pipeline**: Automated testing, linting, and building with GitHub Actions
+- **Unit Tests**: Comprehensive test coverage with Vitest
 
 ## Prerequisites
 
@@ -91,7 +94,24 @@ node dist/run-lottoMax.js
 **Output**: 1 set of 7 numbers (1-50)
 **Configuration**: Excludes top 3 and bottom 3 frequent numbers, 100 warm-up iterations
 
-### 3. Development Commands
+### 3. Update Lottery Data
+
+Keep your CSV files up-to-date with the latest lottery results:
+
+```bash
+npm run update:data
+```
+
+This command automatically downloads the latest data from BCLC (PlayNow.com). See [DATA_UPDATE_GUIDE.md](DATA_UPDATE_GUIDE.md) for more details on automated updates.
+
+### 4. Development Commands
+
+#### Run Tests
+```bash
+npm test                    # Run all tests
+npm run test:watch          # Watch mode
+npm run test:coverage       # With coverage report
+```
 
 #### Lint Code
 ```bash
