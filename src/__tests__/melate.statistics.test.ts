@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { getLastXNumbers, getFirstXNumbers, countNumbersInCSV } from '../melate.statistics.js';
+import { getLastXNumbers, getFirstXNumbers, countNumbersInCSV } from '../core/melate.statistics.js';
 
 describe('melate.statistics', () => {
   describe('countNumbersInCSV', () => {

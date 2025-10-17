@@ -58,4 +58,5 @@ function generateRandomNumbers(config: { min: number, max: number, count: number
 
 
 
-export { generateRandomNumbers, games, get649CsvData, getLottoMaxCsvData, getBC49CsvData, GameConfig };
+export { generateRandomNumbers, games, get649CsvData, getLottoMaxCsvData, getBC49CsvData };
+export type { GameConfig };

@@ -65,6 +65,11 @@ export default [
     },
   },
   {
+    // Config files don't need type checking
+    files: ['**/*.config.ts', '*.config.ts'],
+    ...tseslint.configs.disableTypeChecked,
+  },
+  {
     ignores: ['dist/**', 'node_modules/**', 'coverage/**'],
   },
 ];
