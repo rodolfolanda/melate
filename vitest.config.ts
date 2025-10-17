@@ -15,6 +15,7 @@ export default defineConfig({
         '**/run-*.ts', // Exclude runner files
         'src/**/*.d.ts',
         '**/__tests__/**',
+        '**/update-lottery-data.ts', // Exclude CLI utility script
       ],
       // Coverage thresholds - consistent and achievable goals
       thresholds: {
