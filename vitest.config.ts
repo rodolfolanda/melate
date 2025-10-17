@@ -16,6 +16,7 @@ export default defineConfig({
         'src/**/*.d.ts',
         '**/__tests__/**',
         '**/update-lottery-data.ts', // Exclude CLI utility script
+        'src/ui/**', // Exclude UI components (requires React Testing Library setup)
       ],
       // Coverage thresholds - consistent and achievable goals
       thresholds: {

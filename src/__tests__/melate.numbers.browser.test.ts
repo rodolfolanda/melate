@@ -100,4 +100,6 @@ describe('melate.numbers.browser', () => {
       expect(result.every(num => !exclude.includes(num))).toBe(true);
     });
   });
+
 });
+
