@@ -1069,3 +1069,168 @@ body {
     font-size: 0.875rem;
   }
 }
+
+/* =============================================== */
+/* Range Distribution Chart Styles */
+/* =============================================== */
+.range-distribution-chart {
+  background: var(--card-bg);
+  border-radius: 16px;
+  padding: 2rem;
+  border: 1px solid var(--card-border);
+  backdrop-filter: blur(10px);
+}
+
+.range-distribution-chart__header {
+  margin-bottom: 1.5rem;
+}
+
+.range-distribution-chart__title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0 0 0.5rem 0;
+}
+
+.range-distribution-chart__subtitle {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+.range-distribution-chart__chart {
+  margin-bottom: 1.5rem;
+}
+
+.range-distribution-chart__stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.range-stat-card {
+  padding: 1.25rem;
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  text-align: center;
+}
+
+.range-stat-card__label {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 0.5rem;
+}
+
+.range-stat-card__value {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 0.25rem;
+}
+
+.range-stat-card__detail {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  opacity: 0.8;
+}
+
+.range-distribution-chart__insight {
+  padding: 1rem;
+  background: rgba(139, 92, 246, 0.1);
+  border: 1px solid rgba(139, 92, 246, 0.2);
+  border-radius: 8px;
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+}
+
+.range-distribution-chart__insight p {
+  margin: 0;
+}
+
+.range-distribution-chart__insight strong {
+  color: var(--text-primary);
+}
+
+/* Range Chart Tooltip */
+.range-tooltip {
+  background: rgba(0, 0, 0, 0.9);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
+  padding: 0.75rem;
+}
+
+.range-tooltip__header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.range-tooltip__color-indicator {
+  width: 12px;
+  height: 12px;
+  border-radius: 2px;
+}
+
+.range-tooltip__range {
+  font-weight: 600;
+  color: white;
+  font-size: 0.875rem;
+}
+
+.range-tooltip__content {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.range-tooltip__stat {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  font-size: 0.75rem;
+}
+
+.range-tooltip__label {
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.range-tooltip__value {
+  color: white;
+  font-weight: 500;
+}
+
+/* Responsive Range Distribution Chart */
+@media (max-width: 768px) {
+  .range-distribution-chart {
+    padding: 1rem;
+  }
+
+  .range-distribution-chart__title {
+    font-size: 1.25rem;
+  }
+
+  .range-distribution-chart__stats {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .range-stat-card {
+    padding: 1rem;
+  }
+
+  .range-stat-card__value {
+    font-size: 1.25rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .range-distribution-chart__stats {
+    grid-template-columns: 1fr;
+  }
+}
