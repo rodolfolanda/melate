@@ -37,6 +37,8 @@ interface LotteryState {
   history: GeneratedSet[];
   isGenerating: boolean;
   error: string | null;
+  historicalData: number[][];
+  excludedNumbers: number[];
 }
 
 const DEFAULT_CONFIG: LotteryConfig = {
@@ -93,6 +95,8 @@ export function useLotteryGenerator(): {
     history: [],
     isGenerating: false,
     error: null,
+    historicalData: [],
+    excludedNumbers: [],
   });
 
   const getCurrentGame = useCallback((): GameConfig => {
@@ -104,6 +108,8 @@ export function useLotteryGenerator(): {
       ...prev,
       selectedGame: game,
       generatedNumbers: [],
+      historicalData: [],
+      excludedNumbers: [],
       error: null,
     }));
   }, []);
@@ -122,6 +128,9 @@ export function useLotteryGenerator(): {
     try {
       const game = games[state.selectedGame];
       const dataFetcher = getDataFetcherForGame(state.selectedGame);
+      
+      // Get historical data
+      const historicalData = await dataFetcher();
       
       // Get CSV content as string for frequency analysis
       const response = await fetch(`/${game.filePath}`);
@@ -158,6 +167,8 @@ export function useLotteryGenerator(): {
         ...prev,
         generatedNumbers: draws,
         history: [...newHistoryEntries, ...prev.history],
+        historicalData,
+        excludedNumbers: excludeNumbers,
         isGenerating: false,
         error: null,
       }));
