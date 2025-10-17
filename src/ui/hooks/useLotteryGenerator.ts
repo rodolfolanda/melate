@@ -62,18 +62,18 @@ function getDataFetcherForGame(gameKey: GameKey): () => Promise<number[][]> {
   }
 }
 
-async function generateSingleDraw(
+function generateSingleDraw(
   game: GameConfig,
-  dataFetcher: () => Promise<number[][]>,
   exclude: number[],
   threshold: number,
   warmUp: number,
-): Promise<number[]> {
-  const data = await dataFetcher();
+): number[] {
+  // We don't need historical data for generation - only for statistics
+  // Just generate unique sets among the warm-up iterations
   const results: number[][] = [];
   
   for (let i = 0; i <= warmUp; i++) {
-    results.push(generateRandomNumbers(game, data, exclude, threshold));
+    results.push(generateRandomNumbers(game, results, exclude, threshold));
   }
 
   return results[warmUp];
@@ -145,9 +145,8 @@ export function useLotteryGenerator(): {
       // Generate multiple draws
       const draws: number[][] = [];
       for (let i = 0; i < state.config.numberOfDraws; i++) {
-        const draw = await generateSingleDraw(
+        const draw = generateSingleDraw(
           game,
-          dataFetcher,
           excludeNumbers,
           state.config.threshold,
           state.config.warmUpIterations,
