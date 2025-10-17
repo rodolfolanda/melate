@@ -920,3 +920,152 @@ body {
     height: 6px;
   }
 }
+
+/* =============================================== */
+/* Odd/Even Pie Chart Styles */
+/* =============================================== */
+.odd-even-pie-chart {
+  background: var(--card-bg);
+  border-radius: 16px;
+  padding: 2rem;
+  border: 1px solid var(--card-border);
+  backdrop-filter: blur(10px);
+}
+
+.odd-even-pie-chart__header {
+  margin-bottom: 1.5rem;
+}
+
+.odd-even-pie-chart__title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.odd-even-pie-chart__chart {
+  margin-bottom: 1.5rem;
+}
+
+.odd-even-pie-chart__stats {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.stat-card {
+  padding: 1.25rem;
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.stat-card--odd {
+  border-left: 3px solid #f59e0b;
+}
+
+.stat-card--even {
+  border-left: 3px solid #10b981;
+}
+
+.stat-card__label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  margin-bottom: 0.5rem;
+}
+
+.stat-card__icon {
+  font-size: 1.25rem;
+}
+
+.stat-card__value {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  margin-bottom: 0.25rem;
+}
+
+.stat-card__count {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.stat-card__percentage {
+  font-size: 1rem;
+  color: var(--text-secondary);
+}
+
+.stat-card__examples {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  margin-top: 0.5rem;
+  opacity: 0.8;
+}
+
+.odd-even-pie-chart__insight {
+  padding: 1rem;
+  background: rgba(139, 92, 246, 0.1);
+  border: 1px solid rgba(139, 92, 246, 0.2);
+  border-radius: 8px;
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  text-align: center;
+  margin: 0;
+}
+
+/* Pie Chart Tooltip */
+.pie-tooltip {
+  background: rgba(0, 0, 0, 0.9);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
+  padding: 0.75rem;
+}
+
+.pie-tooltip__name {
+  font-weight: 600;
+  color: white;
+  margin-bottom: 0.25rem;
+}
+
+.pie-tooltip__value {
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 0.875rem;
+}
+
+.pie-tooltip__percentage {
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 0.75rem;
+  margin-top: 0.25rem;
+}
+
+/* Responsive Odd/Even Pie Chart */
+@media (max-width: 768px) {
+  .odd-even-pie-chart {
+    padding: 1rem;
+  }
+
+  .odd-even-pie-chart__title {
+    font-size: 1.25rem;
+  }
+
+  .odd-even-pie-chart__stats {
+    grid-template-columns: 1fr;
+  }
+
+  .stat-card {
+    padding: 1rem;
+  }
+
+  .stat-card__count {
+    font-size: 1.5rem;
+  }
+
+  .stat-card__percentage {
+    font-size: 0.875rem;
+  }
+}
