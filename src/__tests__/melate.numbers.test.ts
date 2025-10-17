@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { generateRandomNumbers, games } from '../melate.numbers.js';
+import { generateRandomNumbers, games } from '../core/melate.numbers.js';
 
 describe('melate.numbers', () => {
   describe('games configuration', () => {

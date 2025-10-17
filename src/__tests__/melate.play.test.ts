@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { generateDrawsForGame } from '../melate.play.js';
-import * as melateNumbers from '../melate.numbers.js';
-import * as melateStatistics from '../melate.statistics.js';
+import { generateDrawsForGame } from '../core/melate.play.js';
+import * as melateNumbers from '../core/melate.numbers.js';
+import * as melateStatistics from '../core/melate.statistics.js';
 
 describe('melate.play', () => {
   // Mock console.log to avoid cluttering test output
