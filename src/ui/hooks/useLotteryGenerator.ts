@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { 
   games, 
   get649CsvData, 
@@ -37,6 +37,8 @@ interface LotteryState {
   history: GeneratedSet[];
   isGenerating: boolean;
   error: string | null;
+  historicalData: number[][];
+  excludedNumbers: number[];
 }
 
 const DEFAULT_CONFIG: LotteryConfig = {
@@ -60,18 +62,18 @@ function getDataFetcherForGame(gameKey: GameKey): () => Promise<number[][]> {
   }
 }
 
-async function generateSingleDraw(
+function generateSingleDraw(
   game: GameConfig,
-  dataFetcher: () => Promise<number[][]>,
   exclude: number[],
   threshold: number,
   warmUp: number,
-): Promise<number[]> {
-  const data = await dataFetcher();
+): number[] {
+  // We don't need historical data for generation - only for statistics
+  // Just generate unique sets among the warm-up iterations
   const results: number[][] = [];
   
   for (let i = 0; i <= warmUp; i++) {
-    results.push(generateRandomNumbers(game, data, exclude, threshold));
+    results.push(generateRandomNumbers(game, results, exclude, threshold));
   }
 
   return results[warmUp];
@@ -93,7 +95,44 @@ export function useLotteryGenerator(): {
     history: [],
     isGenerating: false,
     error: null,
+    historicalData: [],
+    excludedNumbers: [],
   });
+
+  // Load historical data whenever the game changes
+  useEffect(() => {
+    const loadHistoricalData = async (
+      gameKey: GameKey,
+      excludeTop: number,
+      excludeBottom: number,
+    ): Promise<void> => {
+      try {
+        const dataFetcher = getDataFetcherForGame(gameKey);
+        const data = await dataFetcher();
+        const game = games[gameKey];
+        
+        // Get CSV content for frequency analysis
+        const response = await fetch(`/${game.filePath}`);
+        const csvText = await response.text();
+        
+        // Calculate excluded numbers
+        const numberCounts = countNumbersInCSV(csvText);
+        const topNumbers = getFirstXNumbers(numberCounts, excludeTop);
+        const bottomNumbers = getLastXNumbers(numberCounts, excludeBottom);
+        const excludeNumbers = [...topNumbers, ...bottomNumbers];
+        
+        setState(prev => ({
+          ...prev,
+          historicalData: data,
+          excludedNumbers: excludeNumbers,
+        }));
+      } catch (err) {
+        console.error('Error loading historical data:', err);
+      }
+    };
+
+    void loadHistoricalData(state.selectedGame, state.config.excludeTop, state.config.excludeBottom);
+  }, [state.selectedGame, state.config.excludeTop, state.config.excludeBottom]);
 
   const getCurrentGame = useCallback((): GameConfig => {
     return games[state.selectedGame];
@@ -104,6 +143,8 @@ export function useLotteryGenerator(): {
       ...prev,
       selectedGame: game,
       generatedNumbers: [],
+      historicalData: [],
+      excludedNumbers: [],
       error: null,
     }));
   }, []);
@@ -123,6 +164,9 @@ export function useLotteryGenerator(): {
       const game = games[state.selectedGame];
       const dataFetcher = getDataFetcherForGame(state.selectedGame);
       
+      // Get historical data
+      const historicalData = await dataFetcher();
+      
       // Get CSV content as string for frequency analysis
       const response = await fetch(`/${game.filePath}`);
       const csvText = await response.text();
@@ -136,9 +180,8 @@ export function useLotteryGenerator(): {
       // Generate multiple draws
       const draws: number[][] = [];
       for (let i = 0; i < state.config.numberOfDraws; i++) {
-        const draw = await generateSingleDraw(
+        const draw = generateSingleDraw(
           game,
-          dataFetcher,
           excludeNumbers,
           state.config.threshold,
           state.config.warmUpIterations,
@@ -158,6 +201,8 @@ export function useLotteryGenerator(): {
         ...prev,
         generatedNumbers: draws,
         history: [...newHistoryEntries, ...prev.history],
+        historicalData,
+        excludedNumbers: excludeNumbers,
         isGenerating: false,
         error: null,
       }));

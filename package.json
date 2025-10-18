@@ -20,6 +20,7 @@
     "@types/node": "^22.8.7",
     "@types/react": "^19.2.2",
     "@types/react-dom": "^19.2.2",
+    "@types/recharts": "^1.8.29",
     "@types/xlsx": "^0.0.36",
     "@typescript-eslint/eslint-plugin": "^8.46.0",
     "@typescript-eslint/parser": "^8.46.0",
@@ -38,6 +39,7 @@
     "csv-parser": "^3.0.0",
     "eslint": "^9.14.0",
     "react": "^19.2.0",
-    "react-dom": "^19.2.0"
+    "react-dom": "^19.2.0",
+    "recharts": "^3.3.0"
   }
 }
