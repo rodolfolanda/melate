@@ -101,11 +101,15 @@ export function useLotteryGenerator(): {
 
   // Load historical data whenever the game changes
   useEffect(() => {
-    const loadHistoricalData = async (): Promise<void> => {
+    const loadHistoricalData = async (
+      gameKey: GameKey,
+      excludeTop: number,
+      excludeBottom: number,
+    ): Promise<void> => {
       try {
-        const dataFetcher = getDataFetcherForGame(state.selectedGame);
+        const dataFetcher = getDataFetcherForGame(gameKey);
         const data = await dataFetcher();
-        const game = games[state.selectedGame];
+        const game = games[gameKey];
         
         // Get CSV content for frequency analysis
         const response = await fetch(`/${game.filePath}`);
@@ -113,8 +117,8 @@ export function useLotteryGenerator(): {
         
         // Calculate excluded numbers
         const numberCounts = countNumbersInCSV(csvText);
-        const topNumbers = getFirstXNumbers(numberCounts, state.config.excludeTop);
-        const bottomNumbers = getLastXNumbers(numberCounts, state.config.excludeBottom);
+        const topNumbers = getFirstXNumbers(numberCounts, excludeTop);
+        const bottomNumbers = getLastXNumbers(numberCounts, excludeBottom);
         const excludeNumbers = [...topNumbers, ...bottomNumbers];
         
         setState(prev => ({
@@ -127,7 +131,7 @@ export function useLotteryGenerator(): {
       }
     };
 
-    void loadHistoricalData();
+    void loadHistoricalData(state.selectedGame, state.config.excludeTop, state.config.excludeBottom);
   }, [state.selectedGame, state.config.excludeTop, state.config.excludeBottom]);
 
   const getCurrentGame = useCallback((): GameConfig => {
