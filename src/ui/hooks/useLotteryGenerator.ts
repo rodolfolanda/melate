@@ -12,6 +12,19 @@ import {
   getFirstXNumbers, 
   countNumbersInCSV,
 } from '../../core/melate.statistics';
+import { 
+  processCsvFileBrowserWithDates,
+  type LotteryDraw,
+} from '../../core/melate.history.browser';
+import {
+  getDateRangeFromPreset,
+  filterDrawsByDateRange,
+  drawsToNumbers,
+  getDateBounds,
+  type DateFilterPreset,
+  type DateRange,
+} from '../../core/melate.dateFilter';
+import { drawsToCsvText } from '../../core/melate.drawsToCsv';
 
 type GameKey = 'sixFourtyNine' | 'lottoMax' | 'bcSixFourtyNine';
 
@@ -39,11 +52,18 @@ interface LotteryState {
   error: string | null;
   historicalData: number[][];
   excludedNumbers: number[];
+  manuallyExcludedNumbers: number[];
+  dateFilterPreset: DateFilterPreset;
+  customDateRange: DateRange;
+  allDraws: LotteryDraw[];
+  filteredDraws: LotteryDraw[];
+  minDate: Date | null;
+  maxDate: Date | null;
 }
 
 const DEFAULT_CONFIG: LotteryConfig = {
-  excludeTop: 3,
-  excludeBottom: 3,
+  excludeTop: 0,
+  excludeBottom: 0,
   numberOfDraws: 1,
   threshold: 2,
   warmUpIterations: 100,
@@ -87,6 +107,10 @@ export function useLotteryGenerator(): {
   generateNumbers: () => Promise<void>;
   clearHistory: () => void;
   getCurrentGame: () => GameConfig;
+  setDateFilterPreset: (preset: DateFilterPreset) => void;
+  setCustomDateRange: (range: DateRange) => void;
+  toggleManualExclusion: (number: number) => void;
+  clearManualExclusions: () => void;
   } {
   const [state, setState] = useState<LotteryState>({
     selectedGame: 'sixFourtyNine',
@@ -97,42 +121,72 @@ export function useLotteryGenerator(): {
     error: null,
     historicalData: [],
     excludedNumbers: [],
+    manuallyExcludedNumbers: [],
+    dateFilterPreset: 'all',
+    customDateRange: { from: null, to: null },
+    allDraws: [],
+    filteredDraws: [],
+    minDate: null,
+    maxDate: null,
   });
 
   // Load historical data whenever the game changes
   useEffect(() => {
     const loadHistoricalData = async (
       gameKey: GameKey,
-      excludeTop: number,
-      excludeBottom: number,
     ): Promise<void> => {
       try {
-        const dataFetcher = getDataFetcherForGame(gameKey);
-        const data = await dataFetcher();
         const game = games[gameKey];
         
-        // Get CSV content for frequency analysis
-        const response = await fetch(`/${game.filePath}`);
-        const csvText = await response.text();
-        
-        // Calculate excluded numbers
-        const numberCounts = countNumbersInCSV(csvText);
-        const topNumbers = getFirstXNumbers(numberCounts, excludeTop);
-        const bottomNumbers = getLastXNumbers(numberCounts, excludeBottom);
-        const excludeNumbers = [...topNumbers, ...bottomNumbers];
+        // Load draws with dates
+        const allDraws = await processCsvFileBrowserWithDates(game.filePath);
+        const { min, max } = getDateBounds(allDraws);
         
         setState(prev => ({
           ...prev,
-          historicalData: data,
-          excludedNumbers: excludeNumbers,
+          allDraws,
+          filteredDraws: allDraws,
+          historicalData: drawsToNumbers(allDraws),
+          minDate: min,
+          maxDate: max,
         }));
+        // Note: excludedNumbers will be calculated in the date filter effect
       } catch (err) {
         console.error('Error loading historical data:', err);
       }
     };
 
-    void loadHistoricalData(state.selectedGame, state.config.excludeTop, state.config.excludeBottom);
-  }, [state.selectedGame, state.config.excludeTop, state.config.excludeBottom]);
+    void loadHistoricalData(state.selectedGame);
+  }, [state.selectedGame]);
+
+  // Apply date filters whenever filter settings change
+  useEffect(() => {
+    if (state.allDraws.length === 0) return;
+
+    const dateRange = state.dateFilterPreset === 'custom' 
+      ? state.customDateRange 
+      : getDateRangeFromPreset(state.dateFilterPreset);
+
+    const filtered = filterDrawsByDateRange(state.allDraws, dateRange);
+    const filteredNumbers = drawsToNumbers(filtered);
+
+    // BUGFIX: Recalculate excluded numbers based on FILTERED data, not all data
+    const filteredCsvText = drawsToCsvText(filtered);
+    const numberCounts = countNumbersInCSV(filteredCsvText);
+    const topNumbers = getFirstXNumbers(numberCounts, state.config.excludeTop);
+    const bottomNumbers = getLastXNumbers(numberCounts, state.config.excludeBottom);
+    
+    // Combine auto-excluded with manually-excluded numbers
+    const autoExcluded = [...topNumbers, ...bottomNumbers];
+    const allExcluded = [...new Set([...autoExcluded, ...state.manuallyExcludedNumbers])];
+
+    setState(prev => ({
+      ...prev,
+      filteredDraws: filtered,
+      historicalData: filteredNumbers,
+      excludedNumbers: allExcluded, // Combined auto + manual exclusions
+    }));
+  }, [state.dateFilterPreset, state.customDateRange, state.allDraws, state.config.excludeTop, state.config.excludeBottom, state.manuallyExcludedNumbers]);
 
   const getCurrentGame = useCallback((): GameConfig => {
     return games[state.selectedGame];
@@ -145,6 +199,10 @@ export function useLotteryGenerator(): {
       generatedNumbers: [],
       historicalData: [],
       excludedNumbers: [],
+      allDraws: [],
+      filteredDraws: [],
+      minDate: null,
+      maxDate: null,
       error: null,
     }));
   }, []);
@@ -222,6 +280,43 @@ export function useLotteryGenerator(): {
     }));
   }, []);
 
+  const setDateFilterPreset = useCallback((preset: DateFilterPreset): void => {
+    setState(prev => ({
+      ...prev,
+      dateFilterPreset: preset,
+      error: null,
+    }));
+  }, []);
+
+  const setCustomDateRange = useCallback((range: DateRange): void => {
+    setState(prev => ({
+      ...prev,
+      customDateRange: range,
+      error: null,
+    }));
+  }, []);
+
+  const toggleManualExclusion = useCallback((number: number): void => {
+    setState(prev => {
+      const isCurrentlyExcluded = prev.manuallyExcludedNumbers.includes(number);
+      const newManualExclusions = isCurrentlyExcluded
+        ? prev.manuallyExcludedNumbers.filter(n => n !== number)
+        : [...prev.manuallyExcludedNumbers, number];
+      
+      return {
+        ...prev,
+        manuallyExcludedNumbers: newManualExclusions,
+      };
+    });
+  }, []);
+
+  const clearManualExclusions = useCallback((): void => {
+    setState(prev => ({
+      ...prev,
+      manuallyExcludedNumbers: [],
+    }));
+  }, []);
+
   return {
     state,
     setSelectedGame,
@@ -229,5 +324,9 @@ export function useLotteryGenerator(): {
     generateNumbers,
     clearHistory,
     getCurrentGame,
+    setDateFilterPreset,
+    setCustomDateRange,
+    toggleManualExclusion,
+    clearManualExclusions,
   };
 }

@@ -1,15 +1,26 @@
-import React, { useState } from 'react';
-import { FrequencyBarChart, HotColdGrid, OddEvenPieChart, RangeDistributionChart } from './charts';
+import React, { useState, useMemo, useEffect } from 'react';
+import { FrequencyBarChart, HotColdGrid, OddEvenPieChart, RangeDistributionChart, HeatmapCalendar } from './charts';
 import { useChartData } from '../hooks/useChartData';
+import { DateFilterPanel, type DateFilterPreset, type DateRange } from './DateFilterPanel';
+import type { LotteryDraw } from '../../core/melate.history.browser';
+import { calculateHeatmapData, getAvailableYears } from '../../core/analytics';
 
 interface StatisticsPanelProps {
   historicalData: number[][];
   maxNumber: number;
   excludedNumbers: number[];
   onNumberToggle?: (number: number) => void;
+  dateFilterPreset: DateFilterPreset;
+  customDateRange: DateRange;
+  onDateFilterPresetChange: (preset: DateFilterPreset) => void;
+  onCustomDateRangeChange: (range: DateRange) => void;
+  minDate: Date | null;
+  maxDate: Date | null;
+  manuallyExcludedNumbers?: number[];
+  filteredDraws: LotteryDraw[];
 }
 
-type ChartTab = 'frequency' | 'hotcold' | 'oddeven' | 'ranges';
+type ChartTab = 'frequency' | 'hotcold' | 'oddeven' | 'ranges' | 'trends';
 
 interface TabConfig {
   id: ChartTab;
@@ -42,6 +53,12 @@ const TABS: TabConfig[] = [
     label: 'Ranges',
     icon: '📈',
     description: 'Number distribution across ranges',
+  },
+  {
+    id: 'trends',
+    label: 'Timeline',
+    icon: '📅',
+    description: 'See when numbers appeared over time',
   },
 ];
 
@@ -117,6 +134,8 @@ function ChartContent({
   rangeDistribution,
   maxNumber,
   onNumberClick,
+  manuallyExcludedNumbers,
+  filteredDraws,
 }: {
   activeTab: ChartTab;
   frequencyData: { number: number; count: number; percentage: number; isExcluded?: boolean }[];
@@ -126,11 +145,43 @@ function ChartContent({
   rangeDistribution: { range: string; count: number; percentage: number }[];
   maxNumber: number;
   onNumberClick?: (number: number) => void;
+  manuallyExcludedNumbers?: number[];
+  filteredDraws: LotteryDraw[];
 }): React.ReactElement {
+  const [selectedNumber, setSelectedNumber] = useState(7);
+  const [selectedYear, setSelectedYear] = useState<number>(() => {
+    const now = new Date();
+    return now.getFullYear();
+  });
+  
+  const availableYears = useMemo(() => {
+    if (filteredDraws.length === 0) return [new Date().getFullYear()];
+    return getAvailableYears(filteredDraws);
+  }, [filteredDraws]);
+  
+  // Ensure selected year is valid
+  useEffect(() => {
+    if (!availableYears.includes(selectedYear)) {
+      setSelectedYear(availableYears[0] ?? new Date().getFullYear());
+    }
+  }, [availableYears, selectedYear]);
+  
+  const heatmapData = useMemo(() => {
+    if (filteredDraws.length === 0 || !selectedNumber) {
+      return null;
+    }
+    return calculateHeatmapData(filteredDraws, selectedNumber, selectedYear);
+  }, [filteredDraws, selectedNumber, selectedYear]);
+
   return (
     <div className="statistics-panel__content">
       {activeTab === 'frequency' && (
-        <FrequencyBarChart data={frequencyData} maxNumber={maxNumber} />
+        <FrequencyBarChart 
+          data={frequencyData} 
+          maxNumber={maxNumber}
+          onNumberClick={onNumberClick}
+          manuallyExcludedNumbers={manuallyExcludedNumbers}
+        />
       )}
 
       {activeTab === 'hotcold' && (
@@ -153,6 +204,20 @@ function ChartContent({
           data={rangeDistribution}
           maxNumber={maxNumber}
         />
+      )}
+      
+      {activeTab === 'trends' && heatmapData && (
+        <HeatmapCalendar
+          heatmapData={heatmapData}
+          maxNumber={maxNumber}
+          onNumberChange={setSelectedNumber}
+        />
+      )}
+      
+      {activeTab === 'trends' && !heatmapData && (
+        <div className="chart-empty-state">
+          <p>No historical data available for trend analysis</p>
+        </div>
       )}
     </div>
   );
@@ -199,6 +264,14 @@ export function StatisticsPanel({
   maxNumber,
   excludedNumbers,
   onNumberToggle,
+  dateFilterPreset,
+  customDateRange,
+  onDateFilterPresetChange,
+  onCustomDateRangeChange,
+  minDate,
+  maxDate,
+  manuallyExcludedNumbers = [],
+  filteredDraws,
 }: StatisticsPanelProps): React.ReactElement {
   const [activeTab, setActiveTab] = useState<ChartTab>('frequency');
   const [isExpanded, setIsExpanded] = useState(true);
@@ -225,6 +298,15 @@ export function StatisticsPanel({
 
       {isExpanded && (
         <>
+          <DateFilterPanel
+            preset={dateFilterPreset}
+            customRange={customDateRange}
+            onPresetChange={onDateFilterPresetChange}
+            onCustomRangeChange={onCustomDateRangeChange}
+            minDate={minDate ?? undefined}
+            maxDate={maxDate ?? undefined}
+          />
+
           {isLoading && (
             <div className="statistics-panel__loading">
               <div className="loading-spinner" />
@@ -254,6 +336,8 @@ export function StatisticsPanel({
                 rangeDistribution={rangeDistribution}
                 maxNumber={maxNumber}
                 onNumberClick={onNumberToggle}
+                manuallyExcludedNumbers={manuallyExcludedNumbers}
+                filteredDraws={filteredDraws}
               />
               <PanelInfo activeTab={activeTab} excludedCount={excludedNumbers.length} />
             </>

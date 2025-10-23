@@ -1,5 +1,11 @@
 // Browser-compatible CSV processing for lottery data
 
+export interface LotteryDraw {
+  date: Date;
+  numbers: number[];
+  drawNumber?: number;
+}
+
 async function fetchCsvFile(filePath: string): Promise<string> {
   const response = await fetch(`/${filePath}`);
   if (!response.ok) {
@@ -54,11 +60,47 @@ function extractNumberDrawnValues(json: Record<string, string>[]): number[][] {
   });
 }
 
+function extractLotteryDraws(json: Record<string, string>[]): LotteryDraw[] {
+  return json.map(entry => {
+    const numbers: number[] = [];
+    for (const key in entry) {
+      if (key.startsWith('NUMBER DRAWN')) {
+        const num = Number(entry[key]);
+        if (!isNaN(num) && num > 0) {
+          numbers.push(num);
+        }
+      }
+    }
+    
+    const drawDate = entry['DRAW DATE'] ?? entry['Draw Date'] ?? '';
+    const date = drawDate ? new Date(drawDate) : new Date();
+    
+    const drawNumber = entry['DRAW NUMBER'] ?? entry['Draw Number'];
+    
+    return {
+      date,
+      numbers,
+      drawNumber: drawNumber ? Number(drawNumber) : undefined,
+    };
+  });
+}
+
 export async function processCsvFileBrowser(filePath: string): Promise<number[][]> {
   try {
     const csvText = await fetchCsvFile(filePath);
     const json = parseCsvToJson(csvText);
     return extractNumberDrawnValues(json);
+  } catch (error) {
+    console.error(`Error processing CSV file ${filePath}:`, error);
+    throw error;
+  }
+}
+
+export async function processCsvFileBrowserWithDates(filePath: string): Promise<LotteryDraw[]> {
+  try {
+    const csvText = await fetchCsvFile(filePath);
+    const json = parseCsvToJson(csvText);
+    return extractLotteryDraws(json);
   } catch (error) {
     console.error(`Error processing CSV file ${filePath}:`, error);
     throw error;

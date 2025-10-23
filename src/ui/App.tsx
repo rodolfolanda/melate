@@ -6,6 +6,8 @@ import { GenerateButton } from './components/GenerateButton';
 import { ConfigurationPanel } from './components/ConfigurationPanel';
 import { GeneratedHistory } from './components/GeneratedHistory';
 import { StatisticsPanel } from './components/StatisticsPanel';
+import type { DateFilterPreset, DateRange } from './components/DateFilterPanel';
+import type { LotteryDraw } from '../core/melate.history.browser';
 
 /**
  * Statistics section component
@@ -17,6 +19,14 @@ function StatisticsSection({
   showStatistics,
   onToggle,
   onNumberToggle,
+  dateFilterPreset,
+  customDateRange,
+  onDateFilterPresetChange,
+  onCustomDateRangeChange,
+  minDate,
+  maxDate,
+  manuallyExcludedNumbers,
+  filteredDraws,
 }: {
   historicalData: number[][];
   maxNumber: number;
@@ -24,6 +34,14 @@ function StatisticsSection({
   showStatistics: boolean;
   onToggle: () => void;
   onNumberToggle: (number: number) => void;
+  dateFilterPreset: DateFilterPreset;
+  customDateRange: DateRange;
+  onDateFilterPresetChange: (preset: DateFilterPreset) => void;
+  onCustomDateRangeChange: (range: DateRange) => void;
+  minDate: Date | null;
+  maxDate: Date | null;
+  manuallyExcludedNumbers?: number[];
+  filteredDraws: LotteryDraw[];
 }): React.JSX.Element | null {
   if (historicalData.length === 0) {
     return null;
@@ -47,6 +65,14 @@ function StatisticsSection({
           maxNumber={maxNumber}
           excludedNumbers={excludedNumbers}
           onNumberToggle={onNumberToggle}
+          dateFilterPreset={dateFilterPreset}
+          customDateRange={customDateRange}
+          onDateFilterPresetChange={onDateFilterPresetChange}
+          onCustomDateRangeChange={onCustomDateRangeChange}
+          minDate={minDate}
+          maxDate={maxDate}
+          manuallyExcludedNumbers={manuallyExcludedNumbers}
+          filteredDraws={filteredDraws}
         />
       )}
     </div>
@@ -63,15 +89,16 @@ function App(): React.JSX.Element {
     generateNumbers,
     clearHistory,
     getCurrentGame,
+    setDateFilterPreset,
+    setCustomDateRange,
+    toggleManualExclusion,
   } = useLotteryGenerator();
 
   const currentGame = getCurrentGame();
 
   // Toggle excluded number
   const handleNumberToggle = (number: number): void => {
-    // This would need to be implemented in the hook to allow manual exclusion
-    // For now, we'll just log it
-    console.log('Toggle number:', number);
+    toggleManualExclusion(number);
   };
 
   return (
@@ -128,6 +155,14 @@ function App(): React.JSX.Element {
               showStatistics={showStatistics}
               onToggle={(): void => setShowStatistics(!showStatistics)}
               onNumberToggle={handleNumberToggle}
+              dateFilterPreset={state.dateFilterPreset}
+              customDateRange={state.customDateRange}
+              onDateFilterPresetChange={setDateFilterPreset}
+              onCustomDateRangeChange={setCustomDateRange}
+              minDate={state.minDate}
+              maxDate={state.maxDate}
+              manuallyExcludedNumbers={state.manuallyExcludedNumbers}
+              filteredDraws={state.filteredDraws}
             />
           </div>
         </div>
