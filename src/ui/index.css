@@ -12,7 +12,9 @@
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 
-  --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  --primary-color: #667eea;
+  --secondary-color: #764ba2;
+  --primary-gradient: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
   --card-bg: rgba(255, 255, 255, 0.05);
   --card-border: rgba(255, 255, 255, 0.1);
   --input-bg: rgba(255, 255, 255, 0.1);
@@ -178,12 +180,12 @@ body {
 }
 
 .game-selector-select:hover {
-  border-color: #667eea;
+  border-color: var(--primary-color);
 }
 
 .game-selector-select:focus {
   outline: none;
-  border-color: #667eea;
+  border-color: var(--primary-color);
   box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
 }
 
@@ -194,7 +196,7 @@ body {
 .game-info-badge {
   display: inline-block;
   padding: 0.5rem 1rem;
-  background: linear-gradient(135deg, #667eea33, #764ba233);
+  background: linear-gradient(135deg, var(--primary-color)33, var(--secondary-color)33);
   border-radius: 20px;
   font-size: 0.875rem;
   font-weight: 500;
@@ -243,7 +245,7 @@ body {
   appearance: none;
   width: 18px;
   height: 18px;
-  background: #667eea;
+  background: var(--primary-color);
   border-radius: 50%;
   cursor: pointer;
 }
@@ -251,7 +253,7 @@ body {
 .config-slider::-moz-range-thumb {
   width: 18px;
   height: 18px;
-  background: #667eea;
+  background: var(--primary-color);
   border-radius: 50%;
   cursor: pointer;
   border: none;
@@ -261,7 +263,7 @@ body {
   display: inline-block;
   margin-left: 0.5rem;
   font-weight: 600;
-  color: #667eea;
+  color: var(--primary-color);
 }
 
 .config-input {
@@ -276,7 +278,7 @@ body {
 
 .config-input:focus {
   outline: none;
-  border-color: #667eea;
+  border-color: var(--primary-color);
 }
 
 .config-advanced-toggle {
@@ -380,7 +382,7 @@ body {
   width: 60px;
   height: 60px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #667eea, #764ba2);
+  background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
   display: flex;
   align-items: center;
   justify-content: center;
@@ -543,7 +545,7 @@ body {
 
 .history-entry-game {
   font-weight: 600;
-  color: #667eea;
+  color: var(--primary-color);
 }
 
 .history-entry-time {
@@ -571,7 +573,7 @@ body {
 
 .history-entry-copy:hover {
   background: rgba(102, 126, 234, 0.2);
-  border-color: #667eea;
+  border-color: var(--primary-color);
 }
 
 /* Responsive Design */
@@ -662,7 +664,7 @@ body {
   padding: 0.75rem;
   background: rgba(255, 255, 255, 0.05);
   border-radius: 8px;
-  border-left: 3px solid #667eea;
+  border-left: 3px solid var(--primary-color);
 }
 
 .chart-legend {
@@ -1640,7 +1642,7 @@ body {
 }
 
 .date-filter__preset-btn--active {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
   border-color: rgba(255, 255, 255, 0.3);
   box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
 }
@@ -1688,7 +1690,7 @@ body {
 
 .date-filter__input:focus {
   outline: none;
-  border-color: #667eea;
+  border-color: var(--primary-color);
   box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
 }
 
@@ -1787,12 +1789,12 @@ body {
 }
 
 .heatmap-selector__select:hover {
-  border-color: #667eea;
+  border-color: var(--primary-color);
 }
 
 .heatmap-selector__select:focus {
   outline: none;
-  border-color: #667eea;
+  border-color: var(--primary-color);
   box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
 }
 
@@ -1836,7 +1838,7 @@ body {
 }
 
 .heatmap-legend__box--appeared {
-  background: #667eea;
+  background: var(--primary-color);
 }
 
 .heatmap-stats {
@@ -1914,14 +1916,14 @@ body {
 }
 
 .heatmap-day--appeared {
-  background: #667eea;
+  background: var(--primary-color);
   box-shadow: 0 0 6px rgba(102, 126, 234, 0.4);
 }
 
 .heatmap-day:hover {
   transform: scale(1.3);
   z-index: 10;
-  border-color: #667eea;
+  border-color: var(--primary-color);
 }
 
 .heatmap-info {
