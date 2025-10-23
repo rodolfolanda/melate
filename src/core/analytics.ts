@@ -27,6 +27,31 @@ export interface RangeDistribution {
   percentage: number;
 }
 
+export interface HeatmapDay {
+  date: Date;
+  appeared: boolean;
+  drawNumbers?: number[]; // All numbers in that draw
+}
+
+export interface HeatmapData {
+  number: number;
+  year: number;
+  months: HeatmapMonth[];
+  totalAppearances: number;
+}
+
+export interface HeatmapMonth {
+  month: number; // 0-11 (JavaScript month)
+  monthName: string;
+  days: HeatmapDay[];
+}
+
+export interface LotteryDraw {
+  date: Date;
+  numbers: number[];
+  drawNumber?: number;
+}
+
 /**
  * Calculate frequency distribution of all numbers from historical draws
  */
@@ -220,4 +245,93 @@ export function calculateNumberPairs(
       return { pair: [num1, num2] as [number, number], count };
     })
     .sort((a, b) => b.count - a.count);
+}
+
+/**
+ * Calculate heatmap data for a specific number showing when it appeared
+ */
+export function calculateHeatmapData(
+  draws: LotteryDraw[],
+  targetNumber: number,
+  year: number,
+): HeatmapData {
+  const MONTHS_IN_YEAR = 12;
+  const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+  
+  // Filter draws for the target year
+  const yearDraws = draws.filter(draw => draw.date.getFullYear() === year);
+  
+  // Create a map of dates to draws for quick lookup
+  const drawsByDate = new Map<string, LotteryDraw>();
+  yearDraws.forEach(draw => {
+    const dateKey = `${draw.date.getFullYear()}-${draw.date.getMonth()}-${draw.date.getDate()}`;
+    drawsByDate.set(dateKey, draw);
+  });
+  
+  // Build heatmap for each month
+  const months: HeatmapMonth[] = [];
+  let totalAppearances = 0;
+  
+  for (let month = 0; month < MONTHS_IN_YEAR; month++) {
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
+    const days: HeatmapDay[] = [];
+    
+    for (let day = 1; day <= daysInMonth; day++) {
+      const date = new Date(year, month, day);
+      const dateKey = `${year}-${month}-${day}`;
+      const draw = drawsByDate.get(dateKey);
+      
+      const appeared = draw ? draw.numbers.includes(targetNumber) : false;
+      if (appeared) {
+        totalAppearances++;
+      }
+      
+      days.push({
+        date,
+        appeared,
+        drawNumbers: draw?.numbers,
+      });
+    }
+    
+    months.push({
+      month,
+      monthName: monthNames[month],
+      days,
+    });
+  }
+  
+  return {
+    number: targetNumber,
+    year,
+    months,
+    totalAppearances,
+  };
+}
+
+/**
+ * Get available years from draw data
+ */
+export function getAvailableYears(draws: LotteryDraw[]): number[] {
+  const years = new Set<number>();
+  draws.forEach(draw => {
+    years.add(draw.date.getFullYear());
+  });
+  return Array.from(years).sort((a, b) => b - a); // Most recent first
+}
+
+/**
+ * Get date range from draws
+ */
+export function getDrawDateRange(draws: LotteryDraw[]): { minDate: Date; maxDate: Date } | null {
+  if (draws.length === 0) return null;
+  
+  let minDate = draws[0].date;
+  let maxDate = draws[0].date;
+  
+  draws.forEach(draw => {
+    if (draw.date < minDate) minDate = draw.date;
+    if (draw.date > maxDate) maxDate = draw.date;
+  });
+  
+  return { minDate, maxDate };
 }

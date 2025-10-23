@@ -4,11 +4,14 @@ import type { NumberFrequency } from '../../../core/analytics';
 
 interface FrequencyDataWithExclusion extends NumberFrequency {
   isExcluded?: boolean;
+  isManuallyExcluded?: boolean;
 }
 
 interface FrequencyBarChartProps {
   data: FrequencyDataWithExclusion[];
   maxNumber: number;
+  onNumberClick?: (number: number) => void;
+  manuallyExcludedNumbers?: number[];
 }
 
 // Constants
@@ -21,6 +24,7 @@ const BORDER_RADIUS = 4;
 
 // Color constants
 const COLOR_EXCLUDED = '#9ca3af'; // gray-400
+const COLOR_MANUALLY_EXCLUDED = '#f97316'; // orange-500
 const COLOR_HOT = '#ef4444'; // red-500
 const COLOR_COLD = '#3b82f6'; // blue-500
 const COLOR_NEUTRAL = '#8b5cf6'; // purple-500
@@ -63,6 +67,11 @@ function getBarColor(
   hotThreshold: number,
   coldThreshold: number,
 ): string {
+  // Manual exclusions have priority and distinct color
+  if (item.isManuallyExcluded) {
+    return COLOR_MANUALLY_EXCLUDED;
+  }
+  
   if (item.isExcluded) {
     return COLOR_EXCLUDED;
   }
@@ -86,8 +95,11 @@ function getStatus(
   hotThreshold: number,
   coldThreshold: number,
 ): string {
+  if (data.isManuallyExcluded) {
+    return 'Manually Excluded';
+  }
   if (data.isExcluded) {
-    return 'Excluded';
+    return 'Auto Excluded';
   }
   if (data.count >= hotThreshold) {
     return 'Hot';
@@ -140,7 +152,11 @@ function ChartLegend(): React.ReactElement {
       </span>
       <span className="legend-item">
         <span className="legend-color" style={{ backgroundColor: COLOR_EXCLUDED }}></span>
-        Excluded
+        Auto Excluded
+      </span>
+      <span className="legend-item">
+        <span className="legend-color" style={{ backgroundColor: COLOR_MANUALLY_EXCLUDED }}></span>
+        Manual
       </span>
     </div>
   );
@@ -178,8 +194,14 @@ function ChartSummary({ stats, maxNumber }: {
 /**
  * Bar chart displaying frequency distribution of lottery numbers
  * Color-coded to show hot (frequent), neutral, and cold (infrequent) numbers
+ * Bars are clickable for manual exclusion
  */
-export function FrequencyBarChart({ data, maxNumber }: FrequencyBarChartProps): React.ReactElement {
+export function FrequencyBarChart({ 
+  data, 
+  maxNumber, 
+  onNumberClick,
+  manuallyExcludedNumbers = [],
+}: FrequencyBarChartProps): React.ReactElement {
   if (!data || data.length === 0) {
     return (
       <div className="chart-empty-state">
@@ -190,16 +212,30 @@ export function FrequencyBarChart({ data, maxNumber }: FrequencyBarChartProps): 
 
   const stats = calculateStats(data);
 
+  // Enhance data with manual exclusion info
+  const enhancedData = data.map(item => ({
+    ...item,
+    isManuallyExcluded: manuallyExcludedNumbers.includes(item.number),
+  }));
+
+  const handleBarClick = (data: unknown): void => {
+    if (onNumberClick && data && typeof data === 'object' && 'number' in data) {
+      const entry = data as FrequencyDataWithExclusion;
+      onNumberClick(entry.number);
+    }
+  };
+
   return (
     <div className="frequency-bar-chart">
       <div className="chart-header">
         <h3>Number Frequency Distribution</h3>
+        <p className="chart-hint">💡 Click on any bar to manually exclude/include that number</p>
         <ChartLegend />
       </div>
       
       <ResponsiveContainer width="100%" height={CHART_HEIGHT}>
         <BarChart
-          data={data}
+          data={enhancedData}
           margin={{ top: 20, right: 30, left: 20, bottom: 60 }}
         >
           <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
@@ -214,11 +250,17 @@ export function FrequencyBarChart({ data, maxNumber }: FrequencyBarChartProps): 
             tick={{ fontSize: 12 }}
           />
           <Tooltip content={<CustomTooltip />} />
-          <Bar dataKey="count" radius={[BORDER_RADIUS, BORDER_RADIUS, 0, 0]}>
-            {data.map((entry, index) => (
+          <Bar 
+            dataKey="count" 
+            radius={[BORDER_RADIUS, BORDER_RADIUS, 0, 0]}
+            onClick={handleBarClick}
+            cursor="pointer"
+          >
+            {enhancedData.map((entry, index) => (
               <Cell 
                 key={`cell-${index}`} 
-                fill={getBarColor(entry, stats.hotThreshold, stats.coldThreshold)} 
+                fill={getBarColor(entry, stats.hotThreshold, stats.coldThreshold)}
+                className="frequency-bar"
               />
             ))}
           </Bar>

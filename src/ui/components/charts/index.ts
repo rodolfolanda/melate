@@ -8,3 +8,4 @@ export { FrequencyBarChart } from './FrequencyBarChart';
 export { HotColdGrid } from './HotColdGrid';
 export { OddEvenPieChart } from './OddEvenPieChart';
 export { RangeDistributionChart } from './RangeDistributionChart';
+export { HeatmapCalendar } from './HeatmapCalendar';
