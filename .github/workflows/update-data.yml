@@ -27,6 +27,11 @@ jobs:
     - name: Install dependencies
       run: npm ci
     
+    - name: Verify dependencies
+      run: |
+        echo "Checking for required dependencies..."
+        npm list adm-zip tsx || echo "Warning: Some dependencies may be missing"
+    
     - name: Update lottery data
       run: npm run update:data
     
@@ -84,3 +89,21 @@ jobs:
         else
           echo "ℹ️  No changes in lottery data - already up to date"
         fi
+    
+    - name: Notify on failure
+      if: failure()
+      uses: actions/github-script@v7
+      with:
+        script: |
+          const issue_number = context.issue.number;
+          const owner = context.repo.owner;
+          const repo = context.repo.repo;
+          
+          // Create an issue for failures (you'll get notified on your personal email if watching)
+          await github.rest.issues.create({
+            owner,
+            repo,
+            title: '🚨 Lottery Data Update Failed',
+            body: `The automated lottery data update workflow failed.\n\n**Workflow Run:** ${context.payload.repository.html_url}/actions/runs/${context.runId}\n\n**Triggered by:** ${context.eventName}\n\n**Time:** ${new Date().toISOString()}\n\nPlease check the workflow logs for details.`,
+            labels: ['automated', 'data-update', 'bug']
+          });
