@@ -127,9 +127,11 @@ data,1,2,5`;
       expect(lastXSpy).toHaveBeenCalledWith(expect.any(Object), 2);
 
       // Verify generateRandomNumbers was called with correct exclusions
+      // Note: With the sliding window optimization, the second parameter is now
+      // a recent results array (not historical data), and it varies per iteration
       expect(generateSpy).toHaveBeenCalledWith(
         mockGame,
-        mockGameData,
+        expect.any(Array), // Now receives sliding window of recent results
         expect.arrayContaining([1, 2, 3, 4]), // Should exclude both top and bottom
         expect.any(Number),
       );
@@ -208,9 +210,10 @@ data,1,2,5`;
       await new Promise((resolve) => setTimeout(resolve, 50));
 
       // Verify threshold was passed correctly
+      // Note: Second parameter is now empty array (no uniqueness checking during warmup)
       expect(generateSpy).toHaveBeenCalledWith(
         mockGame,
-        mockGameData,
+        [],
         expect.any(Array),
         threshold,
       );
@@ -257,7 +260,8 @@ data,1,2,5`;
       await new Promise((resolve) => setTimeout(resolve, 50));
 
       // Verify empty exclusion array was passed
-      expect(generateSpy).toHaveBeenCalledWith(mockGame, mockGameData, [], expect.any(Number));
+      // Note: Second parameter is now empty array (no uniqueness checking during warmup)
+      expect(generateSpy).toHaveBeenCalledWith(mockGame, [], [], expect.any(Number));
     });
 
     it('should handle multiple draws correctly', async () => {

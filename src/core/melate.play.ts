@@ -2,13 +2,18 @@ import { generateRandomNumbers, GameConfig } from './melate.numbers.js';
 import { getLastXNumbers, getFirstXNumbers, countNumbersInCSV } from './melate.statistics.js';
 
 async function getDrawFor(config: { min: number; max: number; count: number }, dataFetcher: () => Promise<number[][]>, exclude: number[], threshold: number, warmUp: number): Promise<number[]> {
-  const data = await dataFetcher();
-  const results: number[][] = [];
+  // Pre-load data (for potential future use with historical analysis)
+  await dataFetcher();
+  
+  // During warm-up, we don't need to check for uniqueness - just randomize
+  // This dramatically improves performance for high warm-up values
+  let result: number[] = [];
+  
   for (let i = 0; i <= warmUp; i++) {
-    results.push(generateRandomNumbers(config, data, exclude, threshold));
+    result = generateRandomNumbers(config, [], exclude, threshold);
   }
 
-  return results[warmUp];
+  return result;
 }
 
 function generateDrawsForGame(

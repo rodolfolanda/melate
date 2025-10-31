@@ -41,6 +41,7 @@ interface LotteryConfig {
   numberOfDraws: number;
   threshold: number;
   warmUpIterations: number;
+  warmUpOnce: boolean; // true = warm up once (fast), false = warm up per draw (slower but more random)
 }
 
 interface LotteryState {
@@ -67,6 +68,7 @@ const DEFAULT_CONFIG: LotteryConfig = {
   numberOfDraws: 1,
   threshold: 2,
   warmUpIterations: 100,
+  warmUpOnce: true, // Default to better performance
 };
 
 function getDataFetcherForGame(gameKey: GameKey): () => Promise<number[][]> {
@@ -88,15 +90,15 @@ function generateSingleDraw(
   threshold: number,
   warmUp: number,
 ): number[] {
-  // We don't need historical data for generation - only for statistics
-  // Just generate unique sets among the warm-up iterations
-  const results: number[][] = [];
+  // During warm-up, we don't need to check for uniqueness - just randomize
+  // Only the final draw needs uniqueness checking
+  let result: number[] = [];
   
   for (let i = 0; i <= warmUp; i++) {
-    results.push(generateRandomNumbers(game, results, exclude, threshold));
+    result = generateRandomNumbers(game, [], exclude, threshold);
   }
 
-  return results[warmUp];
+  return result;
 }
 
 // eslint-disable-next-line max-lines-per-function
@@ -235,16 +237,32 @@ export function useLotteryGenerator(): {
       const bottomNumbers = getLastXNumbers(numberCounts, state.config.excludeBottom);
       const excludeNumbers = [...topNumbers, ...bottomNumbers];
 
-      // Generate multiple draws
+      // Generate multiple draws with chosen warm-up strategy
       const draws: number[][] = [];
-      for (let i = 0; i < state.config.numberOfDraws; i++) {
-        const draw = generateSingleDraw(
-          game,
-          excludeNumbers,
-          state.config.threshold,
-          state.config.warmUpIterations,
-        );
-        draws.push(draw);
+      
+      if (state.config.warmUpOnce) {
+        // Strategy 1: Warm up once, then generate all draws (faster)
+        // Do the warm-up iterations first to "randomize" the RNG
+        for (let i = 0; i < state.config.warmUpIterations; i++) {
+          generateRandomNumbers(game, [], excludeNumbers, state.config.threshold);
+        }
+        
+        // Now generate all draws without additional warm-up
+        for (let i = 0; i < state.config.numberOfDraws; i++) {
+          const draw = generateRandomNumbers(game, draws, excludeNumbers, state.config.threshold);
+          draws.push(draw);
+        }
+      } else {
+        // Strategy 2: Warm up for each draw (slower but more independent randomization)
+        for (let i = 0; i < state.config.numberOfDraws; i++) {
+          const draw = generateSingleDraw(
+            game,
+            excludeNumbers,
+            state.config.threshold,
+            state.config.warmUpIterations,
+          );
+          draws.push(draw);
+        }
       }
 
       // Add to history

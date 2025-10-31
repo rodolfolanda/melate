@@ -7,6 +7,7 @@ interface ConfigurationPanelProps {
     numberOfDraws: number;
     threshold: number;
     warmUpIterations: number;
+    warmUpOnce: boolean;
   };
   onConfigChange: (config: Partial<ConfigurationPanelProps['config']>) => void;
 }
@@ -105,14 +106,32 @@ export function ConfigurationPanel({
               id="warmup"
               type="number"
               min="10"
-              max="1000"
+              max="5000"
               step="10"
               value={config.warmUpIterations}
               onChange={(e): void => onConfigChange({ warmUpIterations: Number(e.target.value) })}
               className="config-input"
             />
             <p className="config-hint">
-              Number of randomization cycles
+              Number of randomization cycles (max 5000 for performance)
+            </p>
+          </div>
+
+          <div className="config-group">
+            <label className="config-label" style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }}>
+              <input
+                type="checkbox"
+                checked={config.warmUpOnce}
+                onChange={(e): void => onConfigChange({ warmUpOnce: e.target.checked })}
+                style={{ cursor: 'pointer' }}
+              />
+              <span>Warm up once for all draws (faster)</span>
+            </label>
+            <p className="config-hint" style={{ marginLeft: '28px' }}>
+              {config.warmUpOnce 
+                ? '✓ Best performance: warm-up runs once, then generates all draws quickly'
+                : `⚠️ Slower: each draw gets independent warm-up (×${config.numberOfDraws} iterations)`
+              }
             </p>
           </div>
         </div>
