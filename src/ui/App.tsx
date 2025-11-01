@@ -7,6 +7,10 @@ import { ConfigurationPanel } from './components/ConfigurationPanel';
 import { GeneratedHistory } from './components/GeneratedHistory';
 import { StatisticsPanel } from './components/StatisticsPanel';
 import { ThemeToggle } from './components/ThemeToggle';
+import { ExportButton } from './components/ExportButton';
+import { ValidationPanel } from './components/ValidationPanel';
+import { ValidationResults } from './components/ValidationResults';
+import { validateDraws, type DrawRecord, type ValidationResult, type ExportMetadata } from '../core/melate.export';
 import type { DateFilterPreset, DateRange } from './components/DateFilterPanel';
 import type { LotteryDraw } from '../core/melate.history.browser';
 
@@ -82,6 +86,9 @@ function StatisticsSection({
 
 function App(): React.JSX.Element {
   const [showStatistics, setShowStatistics] = useState(false);
+  const [importedDraws, setImportedDraws] = useState<DrawRecord[]>([]);
+  const [validationResults, setValidationResults] = useState<ValidationResult[]>([]);
+  const [actualNumbers, setActualNumbers] = useState<number[]>([]);
   
   const {
     state,
@@ -100,6 +107,44 @@ function App(): React.JSX.Element {
   // Toggle excluded number
   const handleNumberToggle = (number: number): void => {
     toggleManualExclusion(number);
+  };
+
+  // Handle imported draws
+  const handleImportDraws = (draws: DrawRecord[]): void => {
+    setImportedDraws(draws);
+    setValidationResults([]); // Clear previous results
+    setActualNumbers([]); // Clear actual numbers when clearing/importing new draws
+  };
+
+  // Handle validation
+  const handleValidate = (numbers: number[]): void => {
+    const generatedDraws = importedDraws.map(draw => draw.numbers);
+    const results = validateDraws(generatedDraws, numbers);
+    setValidationResults(results);
+    setActualNumbers(numbers); // Store actual numbers separately
+  };
+
+  // Prepare export metadata
+  const exportMetadata: ExportMetadata = {
+    game: currentGame.gameType ?? 'Unknown',
+    generatedDate: new Date(),
+    totalDraws: state.generatedNumbers.length,
+    configuration: {
+      excludeTop: state.config.excludeTop,
+      excludeBottom: state.config.excludeBottom,
+      threshold: state.config.threshold,
+      warmUpIterations: state.config.warmUpIterations,
+      warmUpOnce: state.config.warmUpOnce,
+    },
+    dateFilter: {
+      preset: state.dateFilterPreset,
+      customRange: {
+        start: state.customDateRange.from,
+        end: state.customDateRange.to,
+      },
+    },
+    generatorVersion: '1.0.0',
+    excludedNumbers: state.excludedNumbers,
   };
 
   return (
@@ -138,12 +183,20 @@ function App(): React.JSX.Element {
                 </div>
               )}
               
-              <GenerateButton
-                onClick={(): void => {
-                  void generateNumbers();
-                }}
-                isGenerating={state.isGenerating}
-              />
+              <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
+                <GenerateButton
+                  onClick={(): void => {
+                    void generateNumbers();
+                  }}
+                  isGenerating={state.isGenerating}
+                />
+                
+                <ExportButton
+                  draws={state.generatedNumbers}
+                  metadata={exportMetadata}
+                  disabled={state.generatedNumbers.length === 0}
+                />
+              </div>
             </div>
 
             <GeneratedHistory
@@ -167,6 +220,22 @@ function App(): React.JSX.Element {
               manuallyExcludedNumbers={state.manuallyExcludedNumbers}
               filteredDraws={state.filteredDraws}
             />
+
+            {/* Validation Section */}
+            <div className="validation-section-container">
+              <ValidationPanel
+                onImportDraws={handleImportDraws}
+                onValidate={handleValidate}
+                hasImportedDraws={importedDraws.length > 0}
+              />
+              
+              {validationResults.length > 0 && actualNumbers.length > 0 && (
+                <ValidationResults
+                  results={validationResults}
+                  actualNumbers={actualNumbers}
+                />
+              )}
+            </div>
           </div>
         </div>
       </main>
