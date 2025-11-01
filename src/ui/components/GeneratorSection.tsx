@@ -63,6 +63,21 @@ export function GeneratorSection({
           onGameChange={onGameChange}
         />
         
+        <div className="config-group" style={{ marginTop: '1rem' }}>
+          <label htmlFor="num-draws" className="config-label">
+            Number of Draws
+          </label>
+          <input
+            id="num-draws"
+            type="number"
+            min="1"
+            max="10"
+            value={state.config.numberOfDraws}
+            onChange={(e): void => onConfigChange({ numberOfDraws: Number(e.target.value) })}
+            className="config-input"
+          />
+        </div>
+        
         <div style={{ marginTop: '1rem' }}>
           <button
             className="advanced-toggle-btn"
