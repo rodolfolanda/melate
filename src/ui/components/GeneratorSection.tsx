@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { GameSelector } from './GameSelector';
 import { ConfigurationPanel } from './ConfigurationPanel';
 import { NumberDisplay } from './NumberDisplay';
@@ -52,6 +52,8 @@ export function GeneratorSection({
   onClearHistory,
   exportMetadata,
 }: GeneratorSectionProps): React.ReactElement {
+  const [showAdvanced, setShowAdvanced] = useState(false);
+
   return (
     <>
       <div className="section-panel">
@@ -61,10 +63,37 @@ export function GeneratorSection({
           onGameChange={onGameChange}
         />
         
-        <ConfigurationPanel
-          config={state.config}
-          onConfigChange={onConfigChange}
-        />
+        <div style={{ marginTop: '1rem' }}>
+          <button
+            className="advanced-toggle-btn"
+            onClick={() => setShowAdvanced(!showAdvanced)}
+            type="button"
+          >
+            {showAdvanced ? '▼' : '▶'} Advanced Options
+          </button>
+          
+          {showAdvanced && (
+            <div style={{ marginTop: '1rem' }}>
+              <ConfigurationPanel
+                config={state.config}
+                onConfigChange={onConfigChange}
+              />
+            </div>
+          )}
+        </div>
+        
+        <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', marginTop: '1.5rem' }}>
+          <GenerateButton
+            onClick={onGenerate}
+            isGenerating={state.isGenerating}
+          />
+          
+          <ExportButton
+            draws={state.generatedNumbers}
+            metadata={exportMetadata}
+            disabled={state.generatedNumbers.length === 0}
+          />
+        </div>
       </div>
 
       <div className="section-panel">
@@ -78,19 +107,6 @@ export function GeneratorSection({
             ⚠️ {state.error}
           </div>
         )}
-        
-        <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', marginTop: '1rem' }}>
-          <GenerateButton
-            onClick={onGenerate}
-            isGenerating={state.isGenerating}
-          />
-          
-          <ExportButton
-            draws={state.generatedNumbers}
-            metadata={exportMetadata}
-            disabled={state.generatedNumbers.length === 0}
-          />
-        </div>
       </div>
 
       <GeneratedHistory
