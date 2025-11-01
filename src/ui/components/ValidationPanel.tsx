@@ -168,6 +168,7 @@ export function ValidationPanel({ onImportDraws, onValidate, hasImportedDraws }:
     setImportError('');
     setActualNumbers('');
     setValidationError('');
+    onImportDraws([]); // Notify parent to clear imported draws
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
     }

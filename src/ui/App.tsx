@@ -88,6 +88,7 @@ function App(): React.JSX.Element {
   const [showStatistics, setShowStatistics] = useState(false);
   const [importedDraws, setImportedDraws] = useState<DrawRecord[]>([]);
   const [validationResults, setValidationResults] = useState<ValidationResult[]>([]);
+  const [actualNumbers, setActualNumbers] = useState<number[]>([]);
   
   const {
     state,
@@ -112,13 +113,15 @@ function App(): React.JSX.Element {
   const handleImportDraws = (draws: DrawRecord[]): void => {
     setImportedDraws(draws);
     setValidationResults([]); // Clear previous results
+    setActualNumbers([]); // Clear actual numbers when clearing/importing new draws
   };
 
   // Handle validation
-  const handleValidate = (actualNumbers: number[]): void => {
+  const handleValidate = (numbers: number[]): void => {
     const generatedDraws = importedDraws.map(draw => draw.numbers);
-    const results = validateDraws(generatedDraws, actualNumbers);
+    const results = validateDraws(generatedDraws, numbers);
     setValidationResults(results);
+    setActualNumbers(numbers); // Store actual numbers separately
   };
 
   // Prepare export metadata
@@ -226,10 +229,10 @@ function App(): React.JSX.Element {
                 hasImportedDraws={importedDraws.length > 0}
               />
               
-              {validationResults.length > 0 && (
+              {validationResults.length > 0 && actualNumbers.length > 0 && (
                 <ValidationResults
                   results={validationResults}
-                  actualNumbers={validationResults[0]?.actual ?? []}
+                  actualNumbers={actualNumbers}
                 />
               )}
             </div>

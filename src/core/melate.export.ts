@@ -109,7 +109,7 @@ function generateCSVHeader(metadata: ExportMetadata): string {
 /**
  * Escape CSV field (handle commas, quotes, newlines)
  */
-function escapeCSVField(field: string | number | undefined): string {
+function escapeCSVField(field: string | number | undefined | null): string {
   if (field === undefined || field === null) {
     return '';
   }

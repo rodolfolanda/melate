@@ -155,6 +155,16 @@ function BestDrawHighlight({ bestDraw }: BestDrawHighlightProps): React.ReactEle
 }
 
 export function ValidationResults({ results, actualNumbers }: ValidationResultsProps): React.ReactElement {
+  // Guard against empty results
+  if (results.length === 0) {
+    return (
+      <div className="validation-results">
+        <h2>📊 Validation Results</h2>
+        <p className="help-text">No results to display.</p>
+      </div>
+    );
+  }
+
   const stats = calculatePrizeStats(results);
   const bestDraw = results.reduce((best, current) => 
     current.matchCount > best.matchCount ? current : best
