@@ -9,16 +9,35 @@ import type { ExportMetadata } from '../../core/melate.export';
 
 interface GeneratorSectionProps {
   state: {
-    selectedGame: string;
-    config: unknown;
+    selectedGame: 'sixFourtyNine' | 'lottoMax' | 'bcSixFourtyNine';
+    config: {
+      excludeTop: number;
+      excludeBottom: number;
+      numberOfDraws: number;
+      threshold: number;
+      warmUpIterations: number;
+      warmUpOnce: boolean;
+    };
     generatedNumbers: number[][];
-    history: unknown[];
+    history: {
+      id: string;
+      numbers: number[];
+      timestamp: Date;
+      gameName: string;
+    }[];
     isGenerating: boolean;
     error: string | null;
   };
   currentGameName: string;
-  onGameChange: (game: string) => void;
-  onConfigChange: (config: unknown) => void;
+  onGameChange: (game: 'sixFourtyNine' | 'lottoMax' | 'bcSixFourtyNine') => void;
+  onConfigChange: (config: Partial<{
+    excludeTop: number;
+    excludeBottom: number;
+    numberOfDraws: number;
+    threshold: number;
+    warmUpIterations: number;
+    warmUpOnce: boolean;
+  }>) => void;
   onGenerate: () => void;
   onClearHistory: () => void;
   exportMetadata: ExportMetadata;
