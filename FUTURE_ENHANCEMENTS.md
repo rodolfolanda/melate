@@ -24,7 +24,7 @@ This document outlines potential features and improvements for the Melate Lotter
 - **Save/export generated numbers** to PDF or email
 - **History management** - filter, search, and analyze past generations
 - **Favorite numbers** - mark certain numbers to include/exclude
-- **Dark mode** toggle
+- ✅ **Dark mode** toggle - COMPLETED
 - **Mobile-responsive improvements** for better phone/tablet experience
 - **Keyboard shortcuts** for power users
 - **Undo/redo** functionality
@@ -190,7 +190,7 @@ This document outlines potential features and improvements for the Melate Lotter
 ## 🗓️ Suggested Implementation Phases
 
 ### Phase 1: Quick Wins (1-2 weeks)
-- Dark mode toggle
+- ✅ Dark mode toggle - COMPLETED
 - Export numbers to PDF/CSV
 - Keyboard shortcuts
 - History filtering and search
@@ -278,8 +278,9 @@ When implementing any of these features:
 - ✅ Statistics and analytics dashboard (Phase 2)
 - ✅ Performance optimization with warm-up strategies (Phase 3)
 - ✅ Warm-up strategy toggle (once vs per-draw) (Phase 3)
+- ✅ Dark mode toggle with theme persistence (Phase 1)
 
 ---
 
 *Last Updated: October 31, 2025*
-*Document Version: 1.0*
+*Document Version: 1.1*
