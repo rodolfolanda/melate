@@ -19,6 +19,10 @@ export function NumberDisplay({ numbers, gameName }: NumberDisplayProps): React.
     );
   }
 
+  const shouldAnimate = numbers.length >= 1 && numbers.length <= 3;
+  const setAnimationDelay = 0.1;
+  const ballAnimationDelay = 0.05;
+
   return (
     <div className="number-display">
       <h2 className="number-display-title">
@@ -26,7 +30,11 @@ export function NumberDisplay({ numbers, gameName }: NumberDisplayProps): React.
       </h2>
       <div className="number-display-sets">
         {numbers.map((set, setIndex) => (
-          <div key={`set-${setIndex}`} className="number-set">
+          <div 
+            key={`set-${setIndex}`} 
+            className={`number-set ${shouldAnimate ? 'number-set-animated' : ''}`}
+            style={shouldAnimate ? { animationDelay: `${setIndex * setAnimationDelay}s` } : undefined}
+          >
             <div className="number-set-label">Set {setIndex + 1}</div>
             <div className="number-set-balls">
               {set.map((number, numberIndex) => (
@@ -34,6 +42,8 @@ export function NumberDisplay({ numbers, gameName }: NumberDisplayProps): React.
                   key={`${setIndex}-${number}`} 
                   number={number}
                   index={numberIndex}
+                  animate={shouldAnimate}
+                  delay={setIndex * setAnimationDelay + numberIndex * ballAnimationDelay}
                 />
               ))}
             </div>

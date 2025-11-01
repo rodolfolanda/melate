@@ -191,7 +191,7 @@ This document outlines potential features and improvements for the Melate Lotter
 
 ### Phase 1: Quick Wins (1-2 weeks)
 - ✅ Dark mode toggle - COMPLETED
-- Export numbers to PDF/CSV
+- ✅ Export numbers to CSV - COMPLETED
 - Keyboard shortcuts
 - History filtering and search
 
@@ -279,8 +279,14 @@ When implementing any of these features:
 - ✅ Performance optimization with warm-up strategies (Phase 3)
 - ✅ Warm-up strategy toggle (once vs per-draw) (Phase 3)
 - ✅ Dark mode toggle with theme persistence (Phase 1)
+- ✅ CSV export with metadata and validation (Phase 3)
+- ✅ Import/validate CSV draws (Phase 3)
+- ✅ Sidebar navigation for improved UI organization (Phase 4)
+- ✅ Collapsible Advanced Options (Phase 4)
+- ✅ Ball animations for visual feedback (Phase 4)
+- ✅ Colorful ball styling by number range (Phase 4)
 
 ---
 
-*Last Updated: October 31, 2025*
-*Document Version: 1.1*
+*Last Updated: November 1, 2025*
+*Document Version: 1.2*

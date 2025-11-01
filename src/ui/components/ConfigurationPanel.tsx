@@ -55,26 +55,11 @@ export function ConfigurationPanel({
         <span className="config-value">{config.excludeBottom}</span>
       </div>
 
-      <div className="config-group">
-        <label htmlFor="num-draws" className="config-label">
-          Number of Draws
-        </label>
-        <input
-          id="num-draws"
-          type="number"
-          min="1"
-          max="10"
-          value={config.numberOfDraws}
-          onChange={(e): void => onConfigChange({ numberOfDraws: Number(e.target.value) })}
-          className="config-input"
-        />
-      </div>
-
       <button
         className="config-advanced-toggle"
         onClick={(): void => setShowAdvanced(!showAdvanced)}
       >
-        {showAdvanced ? '▼' : '▶'} Advanced Options
+        {showAdvanced ? '▼' : '▶'} Expert Settings
       </button>
 
       {showAdvanced && (
