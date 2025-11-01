@@ -21,7 +21,7 @@ export function ConfigurationPanel({
 
   return (
     <div className="config-panel">
-      <h3 className="config-panel-title">More Options</h3>
+      <h3 className="config-panel-title">Configuration</h3>
       
       <div className="config-group">
         <label htmlFor="exclude-top" className="config-label">
@@ -74,7 +74,7 @@ export function ConfigurationPanel({
         className="config-advanced-toggle"
         onClick={(): void => setShowAdvanced(!showAdvanced)}
       >
-        {showAdvanced ? '▼' : '▶'} Advanced Options
+        {showAdvanced ? '▼' : '▶'} Expert Settings
       </button>
 
       {showAdvanced && (
