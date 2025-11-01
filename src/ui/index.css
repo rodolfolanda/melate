@@ -442,6 +442,50 @@ body {
   }
 }
 
+/* Lottery Ball Bounce Animation (for 1-3 draws) */
+.lottery-ball-bounce {
+  animation: ballBounce 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards;
+  opacity: 0;
+  transform: translateY(-20px) scale(0);
+}
+
+@keyframes ballBounce {
+  0% {
+    opacity: 0;
+    transform: translateY(-30px) scale(0.3);
+  }
+  50% {
+    transform: translateY(10px) scale(1.1);
+  }
+  70% {
+    transform: translateY(-5px) scale(0.95);
+  }
+  85% {
+    transform: translateY(2px) scale(1.02);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Number Set Animation */
+.number-set-animated {
+  animation: setFadeIn 0.4s ease-out forwards;
+  opacity: 0;
+}
+
+@keyframes setFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 .lottery-ball-number {
   font-size: 1.5rem;
   font-weight: 700;
