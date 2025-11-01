@@ -435,6 +435,37 @@ body {
   transform: scale(0);
 }
 
+/* Ball Color Variations (by number range) */
+.ball-color-1 {
+  background: linear-gradient(135deg, #FF6B6B, #EE5A6F);
+  box-shadow: 0 4px 12px rgba(255, 107, 107, 0.4);
+}
+
+.ball-color-2 {
+  background: linear-gradient(135deg, #4ECDC4, #44A8A0);
+  box-shadow: 0 4px 12px rgba(78, 205, 196, 0.4);
+}
+
+.ball-color-3 {
+  background: linear-gradient(135deg, #FFE66D, #F7D859);
+  box-shadow: 0 4px 12px rgba(255, 230, 109, 0.4);
+}
+
+.ball-color-4 {
+  background: linear-gradient(135deg, #95E1D3, #7DD3C0);
+  box-shadow: 0 4px 12px rgba(149, 225, 211, 0.4);
+}
+
+.ball-color-5 {
+  background: linear-gradient(135deg, #A8E6CF, #8FD9BC);
+  box-shadow: 0 4px 12px rgba(168, 230, 207, 0.4);
+}
+
+.ball-color-6 {
+  background: linear-gradient(135deg, #C7CEEA, #B4BCDA);
+  box-shadow: 0 4px 12px rgba(199, 206, 234, 0.4);
+}
+
 @keyframes ballPop {
   to {
     opacity: 1;
