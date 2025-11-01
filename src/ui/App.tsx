@@ -6,6 +6,7 @@ import { GenerateButton } from './components/GenerateButton';
 import { ConfigurationPanel } from './components/ConfigurationPanel';
 import { GeneratedHistory } from './components/GeneratedHistory';
 import { StatisticsPanel } from './components/StatisticsPanel';
+import { ThemeToggle } from './components/ThemeToggle';
 import type { DateFilterPreset, DateRange } from './components/DateFilterPanel';
 import type { LotteryDraw } from '../core/melate.history.browser';
 
@@ -103,6 +104,8 @@ function App(): React.JSX.Element {
 
   return (
     <div className="app">
+      <ThemeToggle />
+      
       <header className="app-header">
         <h1>🎰 Lottery Number Generator</h1>
         <p>AI-Powered Smart Number Generation</p>
