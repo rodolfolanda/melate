@@ -1,6 +1,6 @@
 import React from 'react';
 
-export type SidebarSection = 'generator' | 'statistics' | 'validation';
+export type SidebarSection = 'generator' | 'statistics' | 'validation' | 'results';
 
 interface SidebarProps {
   activeSection: SidebarSection;
@@ -15,6 +15,13 @@ export function Sidebar({ activeSection, onSectionChange, hasHistoricalData }: S
       label: 'Generator',
       icon: '🎲',
       description: 'Generate lottery numbers',
+      available: true,
+    },
+    {
+      id: 'results' as SidebarSection,
+      label: 'Results',
+      icon: '🏆',
+      description: 'View latest draw results',
       available: true,
     },
     {

@@ -6,6 +6,7 @@ import { Sidebar, type SidebarSection } from './components/Sidebar';
 import { GeneratorSection } from './components/GeneratorSection';
 import { StatisticsSection } from './components/StatisticsSection';
 import { ValidationSection } from './components/ValidationSection';
+import ResultsViewer from './components/ResultsViewer';
 
 // Helper function to create export metadata
 function createExportMetadata(state: {
@@ -42,6 +43,96 @@ function createExportMetadata(state: {
     generatorVersion: '1.0.0',
     excludedNumbers: state.excludedNumbers,
   };
+}
+
+interface AppContentProps {
+  activeSection: SidebarSection;
+  state: ReturnType<typeof useLotteryGenerator>['state'];
+  currentGame: { gameType?: string; max: number };
+  exportMetadata: ExportMetadata;
+  importedDraws: DrawRecord[];
+  validationResults: ValidationResult[];
+  actualNumbers: number[];
+  onGameChange: (game: GameKey) => void;
+  onConfigChange: (config: Partial<ReturnType<typeof useLotteryGenerator>['state']['config']>) => void;
+  onGenerate: () => void;
+  onClearHistory: () => void;
+  onNumberToggle: (num: number) => void;
+  onDateFilterPresetChange: ReturnType<typeof useLotteryGenerator>['setDateFilterPreset'];
+  onCustomDateRangeChange: (range: { from: Date | null; to: Date | null }) => void;
+  onImportDraws: (draws: DrawRecord[]) => void;
+  onValidate: (nums: number[]) => void;
+}
+
+type GameKey = 'sixFourtyNine' | 'lottoMax' | 'bcSixFourtyNine';
+
+function AppContent({
+  activeSection,
+  state,
+  currentGame,
+  exportMetadata,
+  importedDraws,
+  validationResults,
+  actualNumbers,
+  onGameChange,
+  onConfigChange,
+  onGenerate,
+  onClearHistory,
+  onNumberToggle,
+  onDateFilterPresetChange,
+  onCustomDateRangeChange,
+  onImportDraws,
+  onValidate,
+}: AppContentProps): React.JSX.Element {
+  return (
+    <div className="app-content-wrapper">
+      {activeSection === 'generator' && (
+        <GeneratorSection
+          state={state}
+          currentGameName={currentGame.gameType ?? 'Unknown'}
+          onGameChange={onGameChange}
+          onConfigChange={onConfigChange}
+          onGenerate={onGenerate}
+          onClearHistory={onClearHistory}
+          exportMetadata={exportMetadata}
+        />
+      )}
+
+      {activeSection === 'statistics' && (
+        <StatisticsSection
+          historicalData={state.historicalData}
+          maxNumber={currentGame.max}
+          excludedNumbers={state.excludedNumbers}
+          onNumberToggle={onNumberToggle}
+          dateFilterPreset={state.dateFilterPreset}
+          customDateRange={state.customDateRange}
+          onDateFilterPresetChange={onDateFilterPresetChange}
+          onCustomDateRangeChange={onCustomDateRangeChange}
+          minDate={state.minDate}
+          maxDate={state.maxDate}
+          manuallyExcludedNumbers={state.manuallyExcludedNumbers}
+          filteredDraws={state.filteredDraws}
+        />
+      )}
+
+      {activeSection === 'validation' && (
+        <ValidationSection
+          importedDraws={importedDraws}
+          validationResults={validationResults}
+          actualNumbers={actualNumbers}
+          onImportDraws={onImportDraws}
+          onValidate={onValidate}
+        />
+      )}
+
+      {activeSection === 'results' && (
+        <ResultsViewer
+          selectedGame={state.selectedGame}
+          onGameChange={onGameChange}
+        />
+      )}
+    </div>
+  );
 }
 
 function App(): React.JSX.Element {
@@ -94,51 +185,24 @@ function App(): React.JSX.Element {
       <div className="app-main-content">
         <ThemeToggle />
         
-        <div className="app-content-wrapper">
-          {/* Generator Section */}
-          {activeSection === 'generator' && (
-            <GeneratorSection
-              state={state}
-              currentGameName={currentGame.gameType ?? 'Unknown'}
-              onGameChange={setSelectedGame}
-              onConfigChange={updateConfig}
-              onGenerate={(): void => {
-                void generateNumbers();
-              }}
-              onClearHistory={clearHistory}
-              exportMetadata={exportMetadata}
-            />
-          )}
-
-          {/* Statistics Section */}
-          {activeSection === 'statistics' && (
-            <StatisticsSection
-              historicalData={state.historicalData}
-              maxNumber={currentGame.max}
-              excludedNumbers={state.excludedNumbers}
-              onNumberToggle={handleNumberToggle}
-              dateFilterPreset={state.dateFilterPreset}
-              customDateRange={state.customDateRange}
-              onDateFilterPresetChange={setDateFilterPreset}
-              onCustomDateRangeChange={setCustomDateRange}
-              minDate={state.minDate}
-              maxDate={state.maxDate}
-              manuallyExcludedNumbers={state.manuallyExcludedNumbers}
-              filteredDraws={state.filteredDraws}
-            />
-          )}
-
-          {/* Validation Section */}
-          {activeSection === 'validation' && (
-            <ValidationSection
-              importedDraws={importedDraws}
-              validationResults={validationResults}
-              actualNumbers={actualNumbers}
-              onImportDraws={handleImportDraws}
-              onValidate={handleValidate}
-            />
-          )}
-        </div>
+        <AppContent
+          activeSection={activeSection}
+          state={state}
+          currentGame={currentGame}
+          exportMetadata={exportMetadata}
+          importedDraws={importedDraws}
+          validationResults={validationResults}
+          actualNumbers={actualNumbers}
+          onGameChange={setSelectedGame}
+          onConfigChange={updateConfig}
+          onGenerate={(): void => { void generateNumbers(); }}
+          onClearHistory={clearHistory}
+          onNumberToggle={handleNumberToggle}
+          onDateFilterPresetChange={setDateFilterPreset}
+          onCustomDateRangeChange={setCustomDateRange}
+          onImportDraws={handleImportDraws}
+          onValidate={handleValidate}
+        />
       </div>
     </div>
   );
