@@ -73,7 +73,13 @@ function extractLotteryDraws(json: Record<string, string>[]): LotteryDraw[] {
     }
     
     const drawDate = entry['DRAW DATE'] ?? entry['Draw Date'] ?? '';
-    const date = drawDate ? new Date(drawDate) : new Date();
+    // Parse date as local time to avoid timezone shifts
+    // Date format in CSV is YYYY-MM-DD
+    let date = new Date();
+    if (drawDate) {
+      const [year, month, day] = drawDate.split('-').map(Number);
+      date = new Date(year, month - 1, day); // month is 0-indexed
+    }
     
     const drawNumber = entry['DRAW NUMBER'] ?? entry['Draw Number'];
     
