@@ -1,4 +1,5 @@
 import React from 'react';
+import { useAuth } from '../hooks/useAuth';
 
 export type SidebarSection = 'generator' | 'statistics' | 'validation' | 'results';
 
@@ -9,6 +10,8 @@ interface SidebarProps {
 }
 
 export function Sidebar({ activeSection, onSectionChange, hasHistoricalData }: SidebarProps): React.ReactElement {
+  const { logout } = useAuth();
+  
   const sections = [
     {
       id: 'generator' as SidebarSection,
@@ -69,6 +72,14 @@ export function Sidebar({ activeSection, onSectionChange, hasHistoricalData }: S
       </nav>
 
       <div className="sidebar-footer">
+        <button 
+          onClick={logout}
+          className="logout-button"
+          aria-label="Logout"
+          data-testid="logout-button"
+        >
+          🚪 Logout
+        </button>
         <p className="sidebar-footer-text">Powered by AI & TypeScript ✨</p>
       </div>
     </aside>

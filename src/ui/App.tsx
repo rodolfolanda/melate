@@ -7,6 +7,8 @@ import { GeneratorSection } from './components/GeneratorSection';
 import { StatisticsSection } from './components/StatisticsSection';
 import { ValidationSection } from './components/ValidationSection';
 import ResultsViewer from './components/ResultsViewer';
+import { Login } from './components/Login';
+import { useAuth } from './hooks/useAuth';
 
 // Helper function to create export metadata
 function createExportMetadata(state: {
@@ -136,6 +138,7 @@ function AppContent({
 }
 
 function App(): React.JSX.Element {
+  const { isAuthenticated } = useAuth();
   const [activeSection, setActiveSection] = useState<SidebarSection>('generator');
   const [importedDraws, setImportedDraws] = useState<DrawRecord[]>([]);
   const [validationResults, setValidationResults] = useState<ValidationResult[]>([]);
@@ -173,6 +176,11 @@ function App(): React.JSX.Element {
   };
 
   const exportMetadata = createExportMetadata(state, currentGame.gameType ?? 'Unknown');
+
+  // Show login screen if not authenticated
+  if (!isAuthenticated) {
+    return <Login />;
+  }
 
   return (
     <div className="app-layout">

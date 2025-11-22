@@ -12,9 +12,14 @@
     "test:watch": "vitest",
     "test:ui": "vitest --ui",
     "test:coverage": "vitest run --coverage",
+    "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui",
+    "test:e2e:headed": "playwright test --headed",
+    "test:e2e:debug": "playwright test --debug",
     "update:data": "tsx src/core/update-lottery-data.ts"
   },
   "devDependencies": {
+    "@playwright/test": "^1.56.1",
     "@stylistic/eslint-plugin": "^5.4.0",
     "@types/adm-zip": "^0.5.7",
     "@types/node": "^22.8.7",
