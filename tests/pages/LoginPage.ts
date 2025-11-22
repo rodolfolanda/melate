@@ -17,7 +17,7 @@ export class LoginPage {
     
     // Using getByRole for accessibility-first selectors
     this.usernameInput = page.getByRole('textbox', { name: 'Username' });
-    this.passwordInput = page.getByRole('textbox', { name: 'Password' });
+    this.passwordInput = page.getByLabel('Password');
     this.loginButton = page.getByRole('button', { name: 'Login' });
     this.errorMessage = page.getByRole('alert');
     
